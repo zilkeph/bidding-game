@@ -160,14 +160,14 @@
             errorMessage.textContent = '';
             
             // --- Clicks Calculation (Linear Functions) ---
-            const googleClicks = 1.2 * googleAmount;
-            const instagramClicks = 0.8 * instagramAmount;
-            const youtubeClicks = 0.9 * youtubeAmount;
+            const googleClicks = 0.25 * googleAmount;
+            const instagramClicks = 0.5 * instagramAmount;
+            const youtubeClicks = 0.33 * youtubeAmount;
 
             // --- Profit Calculation (Concave Functions) ---
-            const googleProfit = 50 * Math.sqrt(googleClicks);
-            const instagramProfit = 60 * Math.sqrt(instagramClicks);
-            const youtubeProfit = 70 * Math.sqrt(youtubeClicks);
+            const googleProfit = (googleClicks)^(0.5);
+            const instagramProfit = (instagramClicks)^(0.2);
+            const youtubeProfit = (youtubeClicks)^(0.6);
             
             // --- Calculate Total Profit and New Budget ---
             const totalProfit = googleProfit + instagramProfit + youtubeProfit;
