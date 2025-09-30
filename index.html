@@ -161,7 +161,7 @@
             // --- Profit Calculation (New Power Functions) ---
             // Google Profit: Clicks ^ 0.5 (square root)
             // Note: Using Math.max(0, ...) to handle potential negative numbers from Math.sqrt/pow if input is zero, although it shouldn't be negative here.
-            const googleProfit = Math.pow(Math.max(0, googleClicks), 0.5); 
+            const googleProfit = Math.pow(Math.max(0, googleClicks), 0.7); 
             // Instagram Profit: Clicks ^ 0.7
             const instagramProfit = Math.pow(Math.max(0, instagramClicks), 0.7);
             
