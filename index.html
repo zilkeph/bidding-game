@@ -165,9 +165,9 @@
             const youtubeClicks = 0.33 * youtubeAmount;
 
             // --- Profit Calculation (Concave Functions) ---
-            const googleProfit = (googleClicks)^(0.5);
-            const instagramProfit = (instagramClicks)^(0.2);
-            const youtubeProfit = (youtubeClicks)^(0.6);
+            const googleProfit = Math.pow(googleClicks,0.5);
+            const instagramProfit = Math.pow(instagramClicks,0.2);
+            const youtubeProfit = Math.pow(youtubeClicks,0.6);
             
             // --- Calculate Total Profit and New Budget ---
             const totalProfit = googleProfit + instagramProfit + youtubeProfit;
