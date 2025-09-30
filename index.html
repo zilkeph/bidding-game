@@ -41,11 +41,7 @@
                     <label for="instagramInput" class="block text-sm font-medium text-gray-700">Instagram</label>
                     <input type="number" id="instagramInput" value="0" min="0" max="1000" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 transition duration-150 ease-in-out p-2" />
                 </div>
-                <!-- YouTube Input -->
-                <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
-                    <label for="youtubeInput" class="block text-sm font-medium text-gray-700">YouTube</label>
-                    <input type="number" id="youtubeInput" value="0" min="0" max="1000" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 transition duration-150 ease-in-out p-2" />
-                </div>
+                <!-- The YouTube input field has been removed -->
             </div>
 
             <p id="remainingBudget" class="text-sm font-bold text-gray-500 text-center mt-2">Remaining: $1000</p>
@@ -68,15 +64,11 @@
                         <p class="text-gray-600 text-sm">Clicks: <span id="googleClicks">0</span> | Profit: <span id="googleProfit"></span></p>
                     </div>
                     <!-- Instagram Results -->
-                    <div class="border-b pb-2 border-gray-200">
+                    <div class="pb-2">
                         <h3 class="font-bold text-gray-700">Instagram:</h3>
                         <p class="text-gray-600 text-sm">Clicks: <span id="instagramClicks">0</span> | Profit: <span id="instagramProfit"></span></p>
                     </div>
-                    <!-- YouTube Results -->
-                    <div class="pb-2">
-                        <h3 class="font-bold text-gray-700">YouTube:</h3>
-                        <p class="text-gray-600 text-sm">Clicks: <span id="youtubeClicks">0</span> | Profit: <span id="youtubeProfit"></span></p>
-                    </div>
+                    <!-- YouTube Results are removed from the display -->
                 </div>
             </div>
 
@@ -85,35 +77,37 @@
                 <p class="text-2xl font-extrabold text-blue-600 mt-2">New Budget: <span id="newBudget"></span></p>
             </div>
 
-            <button id="nextRoundButton" class="w-full mt-6 bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-6 rounded-xl shadow-lg transition duration-300 ease-in-out transform hover:scale-105">
-                Start Next Round
+            <button id="restartButton" class="w-full mt-6 bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-6 rounded-xl shadow-lg transition duration-300 ease-in-out transform hover:scale-105">
+                Restart Game
             </button>
         </section>
     </div>
 
     <script>
         // --- Game State Variables ---
-        let budget = 1000;
+        // The game now only lasts one round. The initial budget is used for restart logic.
+        const INITIAL_BUDGET = 1000;
+        let budget = INITIAL_BUDGET;
         let round = 1;
 
         // --- DOM Elements ---
         const budgetDisplay = document.getElementById('budgetDisplay');
         const googleInput = document.getElementById('googleInput');
         const instagramInput = document.getElementById('instagramInput');
-        const youtubeInput = document.getElementById('youtubeInput');
+        // YouTube input is removed
         const remainingBudget = document.getElementById('remainingBudget');
         const distributeButton = document.getElementById('distributeButton');
-        const nextRoundButton = document.getElementById('nextRoundButton');
+        const restartButton = document.getElementById('restartButton'); // Renamed nextRoundButton to restartButton
         const resultsSection = document.getElementById('resultsSection');
         const errorMessage = document.getElementById('error-message');
 
         // --- Clicks and Profit Display Elements ---
         const googleClicksDisplay = document.getElementById('googleClicks');
         const instagramClicksDisplay = document.getElementById('instagramClicks');
-        const youtubeClicksDisplay = document.getElementById('youtubeClicks');
+        // YouTube displays are removed
         const googleProfitDisplay = document.getElementById('googleProfit');
         const instagramProfitDisplay = document.getElementById('instagramProfit');
-        const youtubeProfitDisplay = document.getElementById('youtubeProfit');
+        // YouTube displays are removed
         const totalProfitDisplay = document.getElementById('totalProfit');
         const newBudgetDisplay = document.getElementById('newBudget');
 
@@ -121,8 +115,8 @@
         function updateRemainingBudget() {
             const googleAmount = parseFloat(googleInput.value) || 0;
             const instagramAmount = parseFloat(instagramInput.value) || 0;
-            const youtubeAmount = parseFloat(youtubeInput.value) || 0;
-            const spent = googleAmount + instagramAmount + youtubeAmount;
+            // Removed: const youtubeAmount = parseFloat(youtubeInput.value) || 0;
+            const spent = googleAmount + instagramAmount;
             
             const remaining = budget - spent;
             remainingBudget.textContent = `Remaining: $${remaining.toFixed(2)}`;
@@ -141,8 +135,7 @@
             // Get user input and convert to numbers
             const googleAmount = parseFloat(googleInput.value) || 0;
             const instagramAmount = parseFloat(instagramInput.value) || 0;
-            const youtubeAmount = parseFloat(youtubeInput.value) || 0;
-            const totalSpent = googleAmount + instagramAmount + youtubeAmount;
+            const totalSpent = googleAmount + instagramAmount; // Only two channels now
             
             // Validate input
             if (totalSpent > budget) {
@@ -151,7 +144,7 @@
             } else if (totalSpent < 0) {
                 errorMessage.textContent = 'Error: You cannot spend a negative amount.';
                 return;
-            } else if (googleAmount < 0 || instagramAmount < 0 || youtubeAmount < 0) {
+            } else if (googleAmount < 0 || instagramAmount < 0) {
                 errorMessage.textContent = 'Error: Individual channel spending cannot be negative.';
                 return;
             }
@@ -160,48 +153,59 @@
             errorMessage.textContent = '';
             
             // --- Clicks Calculation (Linear Functions) ---
+            // Google: 0.25 * amount
             const googleClicks = 0.25 * googleAmount;
+            // Instagram: 0.5 * amount
             const instagramClicks = 0.5 * instagramAmount;
-            const youtubeClicks = 0.33 * youtubeAmount;
 
-            // --- Profit Calculation (Concave Functions) ---
-            const googleProfit = Math.pow(googleClicks,0.5);
-            const instagramProfit = Math.pow(instagramClicks,0.2);
-            const youtubeProfit = Math.pow(youtubeClicks,0.6);
+            // --- Profit Calculation (New Power Functions) ---
+            // Google Profit: Clicks ^ 0.5 (square root)
+            // Note: Using Math.max(0, ...) to handle potential negative numbers from Math.sqrt/pow if input is zero, although it shouldn't be negative here.
+            const googleProfit = Math.pow(Math.max(0, googleClicks), 0.5); 
+            // Instagram Profit: Clicks ^ 0.7
+            const instagramProfit = Math.pow(Math.max(0, instagramClicks), 0.7);
             
             // --- Calculate Total Profit and New Budget ---
-            const totalProfit = googleProfit + instagramProfit + youtubeProfit;
-            const newBudget = (budget - totalSpent) + totalProfit;
+            const totalProfit = googleProfit + instagramProfit;
+            // New Budget = Unspent Funds + Total Profit
+            const unspentFunds = budget - totalSpent;
+            const finalBudget = unspentFunds + totalProfit;
 
             // --- Update Game State ---
-            budget = newBudget;
+            budget = finalBudget;
             round++;
 
             // --- Display Results ---
             googleClicksDisplay.textContent = googleClicks.toFixed(2);
             instagramClicksDisplay.textContent = instagramClicks.toFixed(2);
-            youtubeClicksDisplay.textContent = youtubeClicks.toFixed(2);
             googleProfitDisplay.textContent = `$${googleProfit.toFixed(2)}`;
             instagramProfitDisplay.textContent = `$${instagramProfit.toFixed(2)}`;
-            youtubeProfitDisplay.textContent = `$${youtubeProfit.toFixed(2)}`;
             totalProfitDisplay.textContent = `$${totalProfit.toFixed(2)}`;
-            newBudgetDisplay.textContent = `$${newBudget.toFixed(2)}`;
-            budgetDisplay.textContent = `$${newBudget.toFixed(2)}`;
+            newBudgetDisplay.textContent = `$${finalBudget.toFixed(2)}`;
+            budgetDisplay.textContent = `$${finalBudget.toFixed(2)}`;
 
-            // --- Show results and hide inputs for next round ---
+            // --- Show results and hide inputs for restart button ---
             resultsSection.classList.remove('hidden');
             document.getElementById('gameInputs').classList.add('hidden');
+            // Disable the 'Run Campaign' button since the round is over
+            distributeButton.disabled = true; 
         });
 
-        // --- Next Round Logic ---
-        nextRoundButton.addEventListener('click', () => {
-            // Reset inputs and displays
+        // --- Restart Game Logic ---
+        restartButton.addEventListener('click', () => {
+            // Reset budget to original amount and update display
+            budget = INITIAL_BUDGET;
+            budgetDisplay.textContent = `$${budget.toFixed(2)}`;
+            
+            // Reset inputs
             googleInput.value = 0;
             instagramInput.value = 0;
-            youtubeInput.value = 0;
-            updateRemainingBudget();
             
-            // Hide results and show inputs for the new round
+            // Re-enable the distribute button for the new game
+            distributeButton.disabled = false;
+            
+            // Reset visibility
+            updateRemainingBudget();
             resultsSection.classList.add('hidden');
             document.getElementById('gameInputs').classList.remove('hidden');
         });
@@ -209,7 +213,6 @@
         // Add event listeners to input fields to update remaining budget in real-time
         googleInput.addEventListener('input', updateRemainingBudget);
         instagramInput.addEventListener('input', updateRemainingBudget);
-        youtubeInput.addEventListener('input', updateRemainingBudget);
     </script>
 </body>
 </html>
